@@ -10,21 +10,13 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-# Force pods to use the same C++ standard as React Native
-def common_cpp_flags
-  {
-    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
-    'CLANG_CXX_LIBRARY' => 'libc++'
-  }
-end
-
 target 'appv3js' do
   config = use_native_modules!
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :hermes_enabled => true, # Explicitly enable Hermes
-    :fabric_enabled => true, # Keep Fabric
+    :hermes_enabled => true,
+    :fabric_enabled => true,
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
@@ -37,31 +29,28 @@ target 'appv3js' do
   end
 
   post_install do |installer|
-    # Apply common C++ flags
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        # Set C++ flags
-        config.build_settings.merge!(common_cpp_flags)
-        
-        # Add boost to header search paths
-        config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
-        config.build_settings['HEADER_SEARCH_PATHS'] << '$(PODS_ROOT)/boost'
-
-        # Ensure Swift can access React module
-        config.build_settings['SWIFT_INCLUDE_PATHS'] ||= ['$(inherited)']
-        config.build_settings['SWIFT_INCLUDE_PATHS'] << '${PODS_CONFIGURATION_BUILD_DIR}/React-Core'
-        
-        # Enable module imports
-        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
-        config.build_settings['DEFINES_MODULE'] = 'YES'
-      end
-    end
-
     react_native_post_install(
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
+
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        # Ensure C++17 for all targets
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+        config.build_settings['CLANG_CXX_LIBRARY'] = 'libc++'
+        
+        # Add system header paths
+        config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited)'
+        config.build_settings['HEADER_SEARCH_PATHS'] += ' "$(SDKROOT)/usr/include" "$(TOOLCHAIN_DIR)/usr/include"'
+        
+        # Enable modules for Swift
+        config.build_settings['SWIFT_INCLUDE_PATHS'] ||= ['$(inherited)']
+        config.build_settings['SWIFT_INCLUDE_PATHS'] << '${PODS_CONFIGURATION_BUILD_DIR}/React-Core'
+      end
+    end
+
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 end
