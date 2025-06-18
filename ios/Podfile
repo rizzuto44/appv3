@@ -10,18 +10,21 @@ require_relative '../node_modules/@react-native-community/cli-platform-ios/nativ
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
+# Force pods to use the same C++ standard as React Native
+def common_cpp_flags
+  {
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+    'CLANG_CXX_LIBRARY' => 'libc++'
+  }
+end
+
 target 'appv3js' do
   config = use_native_modules!
 
-  # Flags change depending on the env values.
-  flags = get_default_flags()
-
   use_react_native!(
     :path => config[:reactNativePath],
-    :hermes_enabled => flags[:hermes_enabled],
-    :fabric_enabled => flags[:fabric_enabled],
-    # Disable Flipper
-    :flipper_configuration => nil,
+    :hermes_enabled => true, # Explicitly enable Hermes
+    :fabric_enabled => true, # Keep Fabric
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
@@ -34,19 +37,23 @@ target 'appv3js' do
   end
 
   post_install do |installer|
+    # Apply common C++ flags to all pods
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        # Set C++ flags
+        config.build_settings.merge!(common_cpp_flags)
+        
+        # Add boost to header search paths
+        config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
+        config.build_settings['HEADER_SEARCH_PATHS'] << '$(PODS_ROOT)/boost'
+      end
+    end
+
     react_native_post_install(
       installer,
       config[:reactNativePath],
       :mac_catalyst_enabled => false
     )
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
-
-    # Add boost to header search paths
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited)'
-        config.build_settings['HEADER_SEARCH_PATHS'] += ' "$(PODS_ROOT)/boost"'
-      end
-    end
   end
 end
