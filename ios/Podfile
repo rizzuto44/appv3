@@ -13,6 +13,12 @@ prepare_react_native_project!
 target 'appv3js' do
   config = use_native_modules!
 
+  # Ensure codegen happens first
+  use_react_native_codegen!(
+    :path => config[:reactNativePath],
+    :app_path => "#{Dir.pwd}/.."
+  )
+
   use_react_native!(
     :path => config[:reactNativePath],
     :hermes_enabled => true,
@@ -52,16 +58,28 @@ target 'appv3js' do
           '$(inherited)',
           '$(SDKROOT)/usr/include',
           '$(TOOLCHAIN_DIR)/usr/include',
-          '$(TOOLCHAIN_DIR)/usr/lib/clang/$(CLANG_VERSION)/include'
+          '$(TOOLCHAIN_DIR)/usr/lib/clang/$(CLANG_VERSION)/include',
+          # Add paths for generated files
+          '${PODS_CONFIGURATION_BUILD_DIR}/ReactCommon/ReactCommon.framework/Headers',
+          '${PODS_CONFIGURATION_BUILD_DIR}/React-RCTFabric/React_RCTFabric.framework/Headers',
+          '${PODS_CONFIGURATION_BUILD_DIR}/React-Codegen/React_Codegen.framework/Headers',
+          '${PODS_CONFIGURATION_BUILD_DIR}/RCT-Folly/folly.framework/Headers',
+          # Ensure Folly can find its config
+          '${PODS_ROOT}/RCT-Folly',
+          '${PODS_ROOT}/Headers/Private/React-Core'
         ]
         
         config.build_settings['HEADER_SEARCH_PATHS'] ||= header_search_paths.join(' ')
         config.build_settings['SYSTEM_HEADER_SEARCH_PATHS'] = header_search_paths.join(' ')
-        
-        # Ensure JSI headers are found
-        if target.name.include?('React-Core') || target.name.include?('ReactCommon') || target.name.include?('React-jsi')
-          jsi_include_path = '${PODS_ROOT}/../../node_modules/react-native/ReactCommon'
-          config.build_settings['HEADER_SEARCH_PATHS'] += " #{jsi_include_path}"
+
+        # Special handling for specific targets
+        case target.name
+        when 'RCT-Folly'
+          # Ensure Folly can generate its config header
+          config.build_settings['HEADER_SEARCH_PATHS'] += ' ${PODS_TARGET_SRCROOT}'
+        when 'React-Core', 'ReactCommon', 'React-jsi'
+          # Add ReactCommon root for JSI headers
+          config.build_settings['HEADER_SEARCH_PATHS'] += ' ${PODS_ROOT}/../../node_modules/react-native/ReactCommon'
         end
         
         # Maintain Swift/React integration
