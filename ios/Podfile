@@ -9,8 +9,8 @@ target 'appv3js' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :hermes_enabled => true,
-    :fabric_enabled => true,
+    :hermes_enabled => false,  # Temporarily disable Hermes
+    :fabric_enabled => true,   # Keep Fabric enabled
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
