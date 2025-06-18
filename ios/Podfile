@@ -29,6 +29,8 @@ target 'appv3js' do
   end
 
   post_install do |installer|
+    require 'xcodeproj'
+
     react_native_post_install(
       installer,
       config[:reactNativePath],
@@ -37,15 +39,16 @@ target 'appv3js' do
 
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
-        # Ensure C++17 for all targets
+        # Force C++17
         config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
         config.build_settings['CLANG_CXX_LIBRARY'] = 'libc++'
         
-        # Add system header paths
+        # Force system headers at target level
         config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited)'
-        config.build_settings['HEADER_SEARCH_PATHS'] += ' "$(SDKROOT)/usr/include" "$(TOOLCHAIN_DIR)/usr/include"'
+        config.build_settings['HEADER_SEARCH_PATHS'] += ' $(SDKROOT)/usr/include $(TOOLCHAIN_DIR)/usr/include'
+        config.build_settings['SYSTEM_HEADER_SEARCH_PATHS'] = '$(SDKROOT)/usr/include'
         
-        # Enable modules for Swift
+        # Maintain Swift/React integration
         config.build_settings['SWIFT_INCLUDE_PATHS'] ||= ['$(inherited)']
         config.build_settings['SWIFT_INCLUDE_PATHS'] << '${PODS_CONFIGURATION_BUILD_DIR}/React-Core'
       end
