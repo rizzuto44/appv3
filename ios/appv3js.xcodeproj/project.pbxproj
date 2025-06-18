@@ -12,8 +12,8 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		2E8362D82E025D8D003A6CC3 /* WalletBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8362D72E025D8D003A6CC3 /* WalletBridge.swift */; };
-		2E8362D92E025D8D003A6CC3 /* WalletBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E8362D62E025D8D003A6CC3 /* WalletBridge.m */; };
+		2E3E42242E0260A80004AB26 /* WalletBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E3E42232E0260A80004AB26 /* WalletBridge.swift */; };
+		2E3E42252E0260A80004AB26 /* WalletBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E3E42222E0260A80004AB26 /* WalletBridge.m */; };
 		7699B88040F8A987B510C191 /* libPods-appv3js-appv3jsTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-appv3js-appv3jsTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
@@ -39,8 +39,8 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = appv3js/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = appv3js/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-appv3js-appv3jsTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-appv3js-appv3jsTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2E8362D62E025D8D003A6CC3 /* WalletBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = WalletBridge.m; path = appv3js/Bridge/WalletBridge.m; sourceTree = "<group>"; };
-		2E8362D72E025D8D003A6CC3 /* WalletBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WalletBridge.swift; path = appv3js/Bridge/WalletBridge.swift; sourceTree = "<group>"; };
+		2E3E42222E0260A80004AB26 /* WalletBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = WalletBridge.m; path = appv3js/Bridge/WalletBridge.m; sourceTree = SOURCE_ROOT; };
+		2E3E42232E0260A80004AB26 /* WalletBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WalletBridge.swift; path = appv3js/Bridge/WalletBridge.swift; sourceTree = SOURCE_ROOT; };
 		3B4392A12AC88292D35C810B /* Pods-appv3js.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-appv3js.debug.xcconfig"; path = "Target Support Files/Pods-appv3js/Pods-appv3js.debug.xcconfig"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-appv3js.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-appv3js.release.xcconfig"; path = "Target Support Files/Pods-appv3js/Pods-appv3js.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-appv3js-appv3jsTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-appv3js-appv3jsTests.debug.xcconfig"; path = "Target Support Files/Pods-appv3js-appv3jsTests/Pods-appv3js-appv3jsTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -110,6 +110,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		2E3E42212E0260710004AB26 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				2E3E42222E0260A80004AB26 /* WalletBridge.m */,
+				2E3E42232E0260A80004AB26 /* WalletBridge.swift */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -120,8 +129,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				2E8362D62E025D8D003A6CC3 /* WalletBridge.m */,
-				2E8362D72E025D8D003A6CC3 /* WalletBridge.swift */,
+				2E3E42212E0260710004AB26 /* Bridge */,
 				13B07FAE1A68108700A75B9A /* appv3js */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* appv3jsTests */,
@@ -434,10 +442,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2E8362D82E025D8D003A6CC3 /* WalletBridge.swift in Sources */,
-				2E8362D92E025D8D003A6CC3 /* WalletBridge.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				2E3E42242E0260A80004AB26 /* WalletBridge.swift in Sources */,
+				2E3E42252E0260A80004AB26 /* WalletBridge.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
