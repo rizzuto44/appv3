@@ -1,8 +1,13 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require 'json'
 
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
+
+install! 'cocoapods',
+  :deterministic_uuids => false,
+  :integrate_targets => true
 
 target 'appv3js' do
   config = use_native_modules!
@@ -130,5 +135,9 @@ target 'appv3js' do
     end
 
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
+    
+    installer.pods_project.build_configurations.each do |config|
+      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = min_ios_version_supported
+    end
   end
 end
