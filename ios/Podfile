@@ -78,6 +78,27 @@ target 'appv3js' do
           config.build_settings['HEADER_SEARCH_PATHS'] += ' ' + jsi_header_paths.join(' ')
         end
         
+        # Folly-specific configuration
+        if target.to_s == 'RCT-Folly'
+          # Ensure folly-config.h generation
+          config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited)'
+          config.build_settings['HEADER_SEARCH_PATHS'] += ' ${PODS_ROOT}/RCT-Folly ${PODS_TARGET_SRCROOT} ${PODS_ROOT}/boost'
+          
+          # Force correct include order
+          config.build_settings['OTHER_CFLAGS'] = '$(inherited) -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DRNVERSION=72'
+          
+          # Ensure Folly can find its dependencies
+          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_HAVE_CLOCK_GETTIME=1'
+        end
+        
+        # Hermes needs access to Folly
+        if target.to_s.include?('hermes')
+          config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited)'
+          config.build_settings['HEADER_SEARCH_PATHS'] += ' ${PODS_ROOT}/RCT-Folly ${PODS_ROOT}/boost'
+        end
+
         # Maintain Swift/React integration
         config.build_settings['SWIFT_INCLUDE_PATHS'] ||= ['$(inherited)']
         config.build_settings['SWIFT_INCLUDE_PATHS'] << '${PODS_CONFIGURATION_BUILD_DIR}/React-Core'
