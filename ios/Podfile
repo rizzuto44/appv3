@@ -43,10 +43,26 @@ target 'appv3js' do
         config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
         config.build_settings['CLANG_CXX_LIBRARY'] = 'libc++'
         
-        # Force system headers at target level
-        config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited)'
-        config.build_settings['HEADER_SEARCH_PATHS'] += ' $(SDKROOT)/usr/include $(TOOLCHAIN_DIR)/usr/include'
-        config.build_settings['SYSTEM_HEADER_SEARCH_PATHS'] = '$(SDKROOT)/usr/include'
+        # Enable header maps and user paths
+        config.build_settings['USE_HEADERMAP'] = 'YES'
+        config.build_settings['ALWAYS_SEARCH_USER_PATHS'] = 'YES'
+        
+        # Comprehensive header search paths
+        header_search_paths = [
+          '$(inherited)',
+          '$(SDKROOT)/usr/include',
+          '$(TOOLCHAIN_DIR)/usr/include',
+          '$(TOOLCHAIN_DIR)/usr/lib/clang/$(CLANG_VERSION)/include'
+        ]
+        
+        config.build_settings['HEADER_SEARCH_PATHS'] ||= header_search_paths.join(' ')
+        config.build_settings['SYSTEM_HEADER_SEARCH_PATHS'] = header_search_paths.join(' ')
+        
+        # Ensure JSI headers are found
+        if target.name.include?('React-Core') || target.name.include?('ReactCommon') || target.name.include?('React-jsi')
+          jsi_include_path = '${PODS_ROOT}/../../node_modules/react-native/ReactCommon'
+          config.build_settings['HEADER_SEARCH_PATHS'] += " #{jsi_include_path}"
+        end
         
         # Maintain Swift/React integration
         config.build_settings['SWIFT_INCLUDE_PATHS'] ||= ['$(inherited)']
