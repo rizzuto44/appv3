@@ -49,6 +49,21 @@ target 'appv3js' do
           config.build_settings['DEFINES_MODULE'] = 'YES'
         end
         
+        # JSI-specific system headers
+        if target.to_s == 'jsi'
+          recursive_system_headers = [
+            '$(SDKROOT)/usr/include/**',
+            '$(TOOLCHAIN_DIR)/usr/include/**',
+            '$(TOOLCHAIN_DIR)/usr/lib/clang/$(CLANG_VERSION)/include/**'
+          ].join(' ')
+          
+          config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited)'
+          config.build_settings['HEADER_SEARCH_PATHS'] += ' ' + recursive_system_headers
+          
+          config.build_settings['SYSTEM_HEADER_SEARCH_PATHS'] ||= '$(inherited)'
+          config.build_settings['SYSTEM_HEADER_SEARCH_PATHS'] += ' ' + recursive_system_headers
+        end
+        
         # Comprehensive header search paths
         header_search_paths = [
           '$(inherited)',
@@ -67,7 +82,7 @@ target 'appv3js' do
         
         config.build_settings['HEADER_SEARCH_PATHS'] ||= header_search_paths.join(' ')
         config.build_settings['SYSTEM_HEADER_SEARCH_PATHS'] = header_search_paths.join(' ')
-
+        
         # Add ReactCommon root for JSI headers (without target.name check)
         if target.to_s.include?('RCT-Folly')
           config.build_settings['HEADER_SEARCH_PATHS'] += ' ${PODS_TARGET_SRCROOT}'
